@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: run only if the label has bug
         if: contains(github.event.issue.labels.*.name,'bug')
-        run: echo ${{ join(github.event.issue.labels.* ,', ' )}}
+        run: echo ${{ join(github.event.issue.labels.*.name, ',' )}}
   expression-and-context:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
