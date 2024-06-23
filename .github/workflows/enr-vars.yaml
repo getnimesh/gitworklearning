@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
         env:
-            JOB_LEVEL_ENV: Available to all setps in the env-vars-and-context
+            JOB_LEVEL_ENV: Available to all setps in the env-vars-and-context job
         steps:
             - name: long Env var
               run: echo $GITHBI_REF
@@ -22,7 +22,7 @@ jobs:
                 STEP_LEVEL_ENV: Available to only this step
                 WF_LEVLE_ENV: OVERRISED IN STEPS
               run: |
-                echo '${{env.STEP_LEVEL_ENV}}'
+                echo '${{ env.STEP_LEVEL_ENV }}'
                 echo $STEP_LEVEL_ENV
                 echo $WF_LEVLE_ENV
-                echo $JOB_LEVLE_ENV
+                echo $JOB_LEVEL_ENV
