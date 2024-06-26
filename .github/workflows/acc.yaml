@@ -26,6 +26,7 @@ jobs:
         run: |
           if grep -q '^common/' ${{ steps.list-modified-files.outputs.stdout }}; then
             echo "Files under 'common' folder were modified in the pull request to main branch."
+            grep '^common/' ${{ steps.list-modified-files.outputs.stdout }}
           else
             echo "No modified files under 'common' folder in the pull request to main branch."
           fi
