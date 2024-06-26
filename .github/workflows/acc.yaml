@@ -1,9 +1,8 @@
 name: Check Modified Files in 'common' Folder
 
 on:
-  push:
-    branches:
-      - main  # Replace with your branch name
+  pull_request:
+    types: [opened, synchronize]  # Trigger on pull request open and synchronize events
 
 jobs:
   check-modified-files:
@@ -20,7 +19,7 @@ jobs:
       - name: Check if 'common' folder is modified
         run: |
           if grep -q '^common/' ${{ steps.list-modified-files.outputs.stdout }}; then
-            echo "Files under 'common' folder were modified."
+            echo "Files under 'common' folder were modified in the pull request."
           else
-            echo "No modified files under 'common' folder."
+            echo "No modified files under 'common' folder in the pull request."
           fi
