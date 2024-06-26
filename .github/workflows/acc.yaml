@@ -21,8 +21,6 @@ jobs:
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.sha }}
 
-      - name: List modified files names
-        his PRAndWait Answer
 
       - name: Check if 'common' folder is modified
         run: |
