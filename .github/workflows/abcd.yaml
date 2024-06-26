@@ -20,10 +20,10 @@ jobs:
             - name: Get actor name
               run: echo "Actor name ${{ github.actor }}"
 
-            - name: Check for changes in common/dag.py
+            - name: Check for changes in common/abc.py
               id: check_changes
               run: |
-                if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q '^common/dag.py$'; then
+                if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q '^common/abc.py$'; then
                   echo "common/dag.py was modified in this pull request."
                   echo "::set-output name=changed::true"
                 else
