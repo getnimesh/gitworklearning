@@ -1,0 +1,26 @@
+name: Check Modified Files in 'common' Folder
+
+on:
+  push:
+    branches:
+      - main  # Replace with your branch name
+
+jobs:
+  check-modified-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      
+      - name: List modified files
+        id: list-modified-files
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+
+      - name: Check if 'common' folder is modified
+        run: |
+          if grep -q '^common/' ${{ steps.list-modified-files.outputs.stdout }}; then
+            echo "Files under 'common' folder were modified."
+          else
+            echo "No modified files under 'common' folder."
+          fi
