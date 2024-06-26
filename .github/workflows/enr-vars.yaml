@@ -1,0 +1,39 @@
+name: Environment Variables
+on: [push]
+
+env:
+    WF_LEVEL_ENV: available to all jobs
+
+
+jobs:
+    env-vars-and-context:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        env:
+            JOB_LEVEL_ENV: Available to all setps in the env-vars-and-context job
+        steps:
+            - name: long Env var
+              run: echo $GITHBI_REF
+            - name: log Context
+            # before running the workflow
+              run: echo '${{github.ref}}'
+            - name: set Env var
+              run: |
+                echo "NEW_ENV_VAR=$(date)" >> "$GITHUB_ENV"
+                echo "JOB_LEVEL_ENV=$RANDOM" >> "$GITHUB_ENV"
+            - name: multiline env
+              run: |
+                DELIMITER =1234
+                echo "RANDOM_JOKE<< $DELIMITER" >> "$GITHUB_ENV"
+                echo "here is a joke:" >> "$GITHUB_ENV" 
+                echo $DELIMITER" >> "$GITHUB_ENV" 
+            - name: log Custom Env Vars
+              env: 
+                STEP_LEVEL_ENV: Available to only this step
+                WF_LEVLE_ENV: OVERRISED IN STEPS
+              run: |
+                echo '${{ env.STEP_LEVEL_ENV }}'
+                echo $STEP_LEVEL_ENV
+                echo $WF_LEVLE_ENV
+                echo $JOB_LEVEL_ENV
+                echo $NEW_ENV_VAR

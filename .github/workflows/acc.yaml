@@ -1,0 +1,33 @@
+name: Check Modified Files in 'common' Folder
+
+on:
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the main branch
+    types: [opened, synchronize]  # Trigger on pull request open and synchronize events
+
+jobs:
+  check-modified-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      
+      - name: Echo Actor Name
+        run: echo "Actor: ${{ github.actor }}"
+      
+      - name: List modified files
+        id: list-modified-files
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+
+      - name: List modified files names
+        his PRAndWait Answer
+
+      - name: Check if 'common' folder is modified
+        run: |
+          if grep -q '^common/' ${{ steps.list-modified-files.outputs.stdout }}; then
+            echo "Files under 'common' folder were modified in the pull request to main branch."
+          else
+            echo "No modified files under 'common' folder in the pull request to main branch."
+          fi
