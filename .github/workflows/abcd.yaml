@@ -1,44 +1,32 @@
-name: Custom Workflow
+name: Test Restriction
 
 on:
-  pull_request:
-    branches:
-      - main
+    pull_request:
+        types:
+            - opened
+            - synchronize
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
 
-      - name: Echo actor name
-        run: echo "Actor name ${{ github.actor }}"
+            - name: Get actor name
+              run: echo "Actor name ${{ github.actor }}"
 
-      - name: Get list of modified files
-        id: files
-        run: |
-          echo "::set-output name=modified::$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})"
+            - name: Get modified files
+              id: modified_files
+              run: |
+                  git diff --name-only ${{ github.base_ref }}...${{ github.head_ref }} | grep "common/"
 
-      - name: Echo list of modified files
-        run: echo "Modified files ${{ steps.files.outputs.modified }}"
-
-      - name: Check specific files
-        id: check_files
-        run: |
-          FILES="${{ steps.files.outputs.modified }}"
-          if [[ $FILES == *"common/abc.py"* ]] || [[ $FILES == *"common/xyz.json"* ]]; then
-            echo "::set-output name=specific_files_modified::true"
-          else
-            echo "::set-output name=specific_files_modified::false"
-          fi
-
-      #- name: Check user group and close PR if necessary
-       # run: |
-        #  USER_GROUP=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/orgs/{org}/teams/analytics-team/memberships/${{ github.actor }})
-         # if [[ $USER_GROUP == *"active"* ]] && [[ "${{ steps.check_files.outputs.specific_files_modified }}" == "true" ]]; then
-          #  curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} -d '{"state": "closed"}'
-          #fi
+            - name: Check if files are in common folder
+              run: |
+                  if [ -z "${{ steps.modified_files.outputs.stdout }}" ]; then
+                      echo "No modified files in common folder"
+                  else
+                      echo "Modified files in common folder:"
+                      echo "${{ steps.modified_files.outputs.stdout }}"
+                  fi
