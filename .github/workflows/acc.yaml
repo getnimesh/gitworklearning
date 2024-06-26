@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main  # Trigger on pull requests targeting the main branch
-      #types: [opened, synchronize]  # Trigger on pull request open and synchronize events
+    types: [opened, synchronize]  # Trigger on pull request open and synchronize events
 
 jobs:
   check-modified-files:
@@ -14,41 +14,19 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Echo Actor Name
-        run: echo "actor ${{ github.actor }}"
+        run: echo "Actor: ${{ github.actor }}"
       
       - name: List modified files
         id: list-modified-files
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+      - name: List modified files names
+        his PRAndWait Answer
 
       - name: Check if 'common' folder is modified
         run: |
           if grep -q '^common/' ${{ steps.list-modified-files.outputs.stdout }}; then
             echo "Files under 'common' folder were modified in the pull request to main branch."
-            
           else
             echo "No modified files under 'common' folder in the pull request to main branch."
           fi
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v44
-        # To compare changes between the current commit and the last pushed remote commit set `since_last_remote_commit: true`. e.g
-        # with:
-        #   since_last_remote_commit: true
-        with:
-        files: |
-          common/abc.py
-          common/abc.json 
-
-      - name: List all changed files
-        env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: |
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
-          done
-
-
-
-
