@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main  # Trigger on pull requests targeting the main branch
-      #types: [opened, synchronize]  # Trigger on pull request open and synchronize events
+      types: [opened, synchronize]  # Trigger on pull request open and synchronize events
 
 jobs:
   check-modified-files:
@@ -48,14 +48,6 @@ jobs:
           for file in ${ALL_CHANGED_FILES}; do
             echo "$file was changed"
           done
-
-      - name: Run step only when any of the above files change.
-        if: steps.changed-files.files_changed == 'true'
-        env:
-          CHANGED_FILES: ${{ steps.changed-files.changed_files }}
-        run: |
-          echo "Changed files: $CHANGED_FILES"
-      
 
 
 
