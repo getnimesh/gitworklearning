@@ -15,7 +15,7 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Get actor name
               run: echo "Actor name ${{ github.actor }}"
@@ -23,7 +23,11 @@ jobs:
             - name: Get modified files
               id: modified_files
               run: |
-                  git diff --name-only ${{ env.GITHUB_BASE_REF }}...${{ env.GITHUB_HEAD_REF }} | grep "common/"
+              if git diff --name-only ${{ github.base_ref }}..${{ github.sha }} | grep -e 'dags/dag_factory.py' -e 'dags/bi/' -e 'dags/common/'; then
+                echo "::set-output name=changes::true"
+              else
+                echo "::set-output name=changes::false"
+              fi
 
             - name: Check if files are in common folder
               run: |
