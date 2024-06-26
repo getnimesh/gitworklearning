@@ -23,7 +23,7 @@ jobs:
             - name: Get modified files
               id: modified_files
               run: |
-                  git diff --name-only ${{ github.base_ref }}...${{ github.head_ref }} | grep "common/"
+                  git diff --name-only ${{ env.GITHUB_BASE_REF }}...${{ env.GITHUB_HEAD_REF }} | grep "common/"
 
             - name: Check if files are in common folder
               run: |
