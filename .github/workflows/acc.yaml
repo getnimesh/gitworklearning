@@ -13,10 +13,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
       
+      - name: Echo Actor Name
+        run: echo "Actor: ${{ github.actor }}"
+      
       - name: List modified files
         id: list-modified-files
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+
+      - name: List modified files names
+        his PRAndWait Answer
 
       - name: Check if 'common' folder is modified
         run: |
