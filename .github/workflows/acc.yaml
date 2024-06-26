@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main  # Trigger on pull requests targeting the main branch
-      types: [opened, synchronize]  # Trigger on pull request open and synchronize events
+      #types: [opened, synchronize]  # Trigger on pull request open and synchronize events
 
 jobs:
   check-modified-files:
