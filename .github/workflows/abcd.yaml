@@ -23,7 +23,7 @@ jobs:
             - name: Get modified files
               id: modified_files
               run: |
-                  if git diff --name-only ${{ github.base_ref }}..${{ github.sha }} | grep -e 'common/abc.py' -e 'dags/bi/' -e 'dags/common/'; then
+                  if git diff --name-only ${{ github.base_ref }}..${{ github.sha }} | grep 'common/abc.py'; then
                     echo "::set-output name=changes::true"
                   else
                     echo "::set-output name=changes::false"
