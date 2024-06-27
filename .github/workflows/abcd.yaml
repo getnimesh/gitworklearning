@@ -41,3 +41,10 @@ jobs:
           gh pr comment ${{ github.event.pull_request.number }} --body "Changes detected in common/abc.py."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close pull request if common/abc.py changed
+        if: steps.check-abc-changed.outputs.abc_changed == 'true'
+        run: |
+          gh pr close ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}         
