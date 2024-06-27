@@ -11,26 +11,19 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-        
-      - name: Check if common/abc.py was modified
-        id: check-file
+            fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
+      - name: Get changed files
+        id: changed-files
         run: |
-          if git diff --name-only ${{ github.event.before }}...${{ github.event.after }} | grep -q "^common/abc.py$"; then
-            echo "common/abc.py was modified."
-            echo "::set-output name=file_modified::true"
-          else
-            echo "common/abc.py was not modified."
-            echo "::set-output name=file_modified::false"
-          fi
-
-      - name: Display result
+            if ${{ github.event_name == 'pull_request' }}; then
+                echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
+            else
+                echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
+            fi
+      - name: List changed files
         run: |
-          if [ "${{ steps.check-file.outputs.file_modified }}" == "true" ]; then
-            echo "The file common/abc.py was modified."
-          else
-            echo "The file common/abc.py was not modified."
-          fi
+            for file in ${{ steps.changed-files.outputs.changed_files }}; do
+                echo "$file was changed"
+            done
