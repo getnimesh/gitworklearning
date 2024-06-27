@@ -1,39 +1,31 @@
-name: Test Restriction
+name: Check File Modification on Pull Request
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        types:
-            - opened
-            - synchronize
+  pull_request:
+    branches:
+      - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  check-file-modification:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: ${{ github.event.pull_request.head.repo.default_branch == 'main' && 2 || 0 }}
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Get actor name
-              run: echo "Actor name ${{ github.actor }}"
-
-            - name: Get modified files
-              id: modified_files
-              run: |
-                  if git diff --name-only ${{ github.base_ref }}..${{ github.sha }} | grep -e 'common/abc.py' -e 'dags/bi/' -e 'dags/common/'; then
-                    echo "::set-output name=changes::true"
-                  else
-                    echo "::set-output name=changes::false"
-                  fi
-
-            - name: Check if files are in common folder
-              run: |
-                  if [ -z "${{ steps.modified_files.outputs.stdout }}" ]; then
-                      echo "No modified files in common folder"
-                  else
-                      echo "Modified files in common folder:"
-                      echo "${{ steps.modified_files.outputs.stdout }}"
-                  fi
+      - name: Get changed files
+        id: changed-files
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            echo "changed_files=$(git diff --name-only HEAD^ HEAD | xargs)" >> $GITHUB_ENV
+          else
+            echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_ENV
+          fi
+      
+      - name: List changed files
+        run: |
+          for file in ${{ env.changed_files }}; do
+            echo "$file was changed"
+          done
