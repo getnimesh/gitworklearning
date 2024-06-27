@@ -26,6 +26,9 @@ jobs:
       
       - name: List changed files
         run: |
-          for file in ${{ env.changed_files }}; do
-            echo "$file was changed"
-          done
+          changed_files="${{ env.changed_files }}"
+          if [[ $changed_files == *"common/abc.py"* ]]; then
+            echo "common/abc.py was changed"
+          else
+            echo "common/abc.py was NOT changed"
+          fi
