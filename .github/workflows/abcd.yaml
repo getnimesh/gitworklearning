@@ -23,11 +23,11 @@ jobs:
             - name: Check for changes in common/abc.py
               id: check_changes
               run: |
-                if git diff --name-only ${{ github.sha}} HEAD | grep -q '^common/abc.py$'; then
-                  echo "common/dag.py was modified in this pull request."
+                if git diff --name-only ${github.sha} HEAD | grep -q '^common/abc.py$'; then
+                  echo "common/abc.py was modified in this pull request."
                   echo "::set-output name=changed::true"
                 else
-                  echo "common/dag.py was NOT modified in this pull request."
+                  echo "common/abc.py was NOT modified in this pull request."
                   echo "::set-output name=changed::false"
                 fi
 
