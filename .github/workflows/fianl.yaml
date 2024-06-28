@@ -1,0 +1,63 @@
+name: Check File Modification on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-file-modification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: ${{ github.event.pull_request.head.repo.default_branch == 'main' && 2 || 0 }}
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            echo "changed_files=$(git diff --name-only HEAD^ HEAD | xargs)" >> $GITHUB_ENV
+          else
+            echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_ENV
+          fi
+
+      - name: List changed files
+        id: check-abc-changed
+        run: |
+          changed_files="${{ env.changed_files }}"
+          if [[ $changed_files == *"common/abc.py"* ]]; then
+            echo "common/abc.py was changed"
+            echo "::set-output name=abc_changed::true"
+          else
+            echo "common/abc.py was NOT changed"
+            echo "::set-output name=abc_changed::false"
+          fi
+
+      - name: Check files in dags/bi and dags/common
+        id: check-directory-changed
+        run: |
+          changed_files="${{ env.changed_files }}"
+          if [[ $changed_files == *"dags/bi/"* || $changed_files == *"dags/common/"* ]]; then
+            echo "Files modified in dags/bi/ or dags/common/ detected"
+            echo "::set-output name=directory_changed::true"
+          else
+            echo "No changes detected in dags/bi/ or dags/common/"
+            echo "::set-output name=directory_changed::false"
+          fi
+
+      - name: Add comment if common/abc.py changed
+        if: steps.check-abc-changed.outputs.abc_changed == 'true'
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "Changes detected in common/abc.py."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close pull request if common/abc.py changed
+        if: steps.check-abc-changed.outputs.abc_changed == 'true'
+        run: |
+          gh pr close ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
