@@ -36,6 +36,11 @@ jobs:
             echo "::set-output name=abc_changed::false"
           fi
 
+      - name: check PR Author
+        id: check-abc-changed
+        run: |
+          pr_author="${{ github.event.pull_request.user.login }}"
+          echo $pr_author 
     
       - name: Add comment if common/abc.py changed
         if: steps.check-abc-changed.outputs.abc_changed == 'true'
