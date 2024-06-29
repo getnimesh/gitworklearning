@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: check PR Author
-        id: check-abc-changed
+        id: check-PR-Author
         run: |
           pr_author="${{ github.event.pull_request.user.login }}"
           echo $pr_author 
